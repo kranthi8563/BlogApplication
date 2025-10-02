@@ -2,8 +2,10 @@ package com.MyBlog.BlogApplication.model;
 
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.NoArgsConstructor;
-import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -17,8 +19,13 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Username cannot be Blank")
     private String username;
+    @NotBlank(message="Please provide the Password")
+    @Size(min=8,message = "Password must be atleast 8 characters")
     private String password;
+    @NotBlank(message = "Email Cannot be blank")
+    @Email(message = "Please Provide valid email")
     private String email;
     private String role = "user";
 
@@ -61,13 +68,4 @@ public class User {
     public void setRole(String role) {
         this.role = role;
     }
-
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList();
-    }
-
-    public boolean isAccountNonExpired() { return true; }
-    public boolean isAccountNonLocked() { return true; }
-    public boolean isCredentialsNonExpired() { return true; }
-    public boolean isEnabled() { return true; }
 }

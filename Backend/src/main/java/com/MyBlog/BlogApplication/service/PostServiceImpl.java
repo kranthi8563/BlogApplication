@@ -2,6 +2,7 @@ package com.MyBlog.BlogApplication.service;
 
 import com.MyBlog.BlogApplication.dto.PostRequest;
 import com.MyBlog.BlogApplication.dto.PostResponse;
+import com.MyBlog.BlogApplication.exception.ResourceNotFoundException;
 import com.MyBlog.BlogApplication.model.Like;
 import com.MyBlog.BlogApplication.model.Post;
 import com.MyBlog.BlogApplication.model.User;
@@ -22,9 +23,11 @@ import java.util.List;
 public class PostServiceImpl implements PostService{
 
     private PostRepository postRepository;
+    private UserRepository userRepository;
 
-    public PostServiceImpl(PostRepository postRepository){
+    public PostServiceImpl(PostRepository postRepository,UserRepository userRepository){
         this.postRepository = postRepository;
+        this.userRepository = userRepository;
     }
 
 
@@ -74,7 +77,7 @@ public class PostServiceImpl implements PostService{
 
    @Override
    public Post  likedPost(Long id){
-        Post post = postRepository.findById(id).orElseThrow(()->new RuntimeException("Post Not Found with id "+id));
+        Post post = postRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Post Not Found with id "+id));
         post.setLikeCount(post.getLikeCount()+1);
         return postRepository.save(post);
 

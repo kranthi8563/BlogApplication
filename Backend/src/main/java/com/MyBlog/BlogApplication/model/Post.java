@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotBlank;
 
 
 import java.time.Instant;
@@ -16,8 +17,11 @@ public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotBlank(message="Please Provide the title")
     private String title;
+    @NotBlank(message="Please Provide the Content")
     private String content;
+    @NotBlank(message = "Please Provide the Author Name")
     private String Author;
     private Instant createdAt = Instant.now();
     private Long likeCount = 0L;

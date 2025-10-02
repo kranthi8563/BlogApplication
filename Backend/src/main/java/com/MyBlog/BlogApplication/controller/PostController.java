@@ -4,13 +4,14 @@ package com.MyBlog.BlogApplication.controller;
 import com.MyBlog.BlogApplication.model.Post;
 import com.MyBlog.BlogApplication.service.PostService;
 import com.MyBlog.BlogApplication.service.PostServiceImpl;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/post")
+@RequestMapping("/api/posts")
 public class PostController {
 
     private PostServiceImpl postService;
@@ -20,7 +21,7 @@ public class PostController {
     }
 
     @PostMapping("")
-    public Post createPost(@RequestBody Post post){
+    public Post createPost(@Valid @RequestBody Post post){
         return postService.createPost(post);
     }
 
