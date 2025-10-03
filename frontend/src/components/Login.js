@@ -16,7 +16,7 @@ function Login() {
       });
       localStorage.setItem("token", response.data.token);
       alert("Login successful!");
-      navigate("/posts"); // redirect to posts page
+      navigate("/posts");
     } catch (err) {
       alert("Invalid credentials");
     }

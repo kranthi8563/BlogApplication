@@ -1,19 +1,16 @@
 package com.MyBlog.BlogApplication.controller;
 
-import com.MyBlog.BlogApplication.dto.AuthRequest;
+
 import com.MyBlog.BlogApplication.model.User;
 import com.MyBlog.BlogApplication.security.JwtUtil;
 import com.MyBlog.BlogApplication.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -37,7 +34,7 @@ public class AuthController {
     public ResponseEntity<?> loginUser(@RequestBody User loginData) {
         try {
             String token = userService.loginUser(loginData.getUsername(), loginData.getPassword());
-            return ResponseEntity.ok("Bearer " + token);
+            return ResponseEntity.ok(Map.of("token", token));  // 👈 return JSON object
         } catch (Exception e) {
             return ResponseEntity.status(401).body("Invalid username or password");
         }

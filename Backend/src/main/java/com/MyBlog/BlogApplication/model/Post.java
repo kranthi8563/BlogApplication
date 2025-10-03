@@ -1,9 +1,6 @@
 package com.MyBlog.BlogApplication.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
 
@@ -19,6 +16,7 @@ public class Post {
     private Long id;
     @NotBlank(message="Please Provide the title")
     private String title;
+    @Column(columnDefinition = "TEXT")
     @NotBlank(message="Please Provide the Content")
     private String content;
     @NotBlank(message = "Please Provide the Author Name")
