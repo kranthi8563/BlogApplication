@@ -4,18 +4,18 @@ import axios from "axios";
 function CreatePost() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [author, setAuthor] = useState("");  // NEW state for author
+  const [author, setAuthor] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const post = { title, content, author }; // include author
+    const post = { title, content, author };
     const token = localStorage.getItem("token");
 
     try {
       await axios.post("http://localhost:8081/api/posts", post, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`, // ✅ Correct Authorization header
         },
       });
       alert("Post created successfully!");

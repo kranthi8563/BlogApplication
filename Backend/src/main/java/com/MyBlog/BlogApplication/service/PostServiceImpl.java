@@ -1,21 +1,11 @@
 package com.MyBlog.BlogApplication.service;
 
-import com.MyBlog.BlogApplication.dto.PostRequest;
-import com.MyBlog.BlogApplication.dto.PostResponse;
 import com.MyBlog.BlogApplication.exception.ResourceNotFoundException;
-import com.MyBlog.BlogApplication.model.Like;
 import com.MyBlog.BlogApplication.model.Post;
-import com.MyBlog.BlogApplication.model.User;
-import com.MyBlog.BlogApplication.repository.LikeRepository;
 import com.MyBlog.BlogApplication.repository.PostRepository;
 import com.MyBlog.BlogApplication.repository.UserRepository;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 

@@ -1,10 +1,6 @@
 package com.MyBlog.BlogApplication.service;
 
-import com.MyBlog.BlogApplication.dto.PostRequest;
-import com.MyBlog.BlogApplication.dto.PostResponse;
 import com.MyBlog.BlogApplication.model.Post;
-import org.springframework.data.domain.Page;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
