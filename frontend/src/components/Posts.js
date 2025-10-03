@@ -25,6 +25,22 @@ function Posts() {
     fetchPosts();
   }, []);
 
+  const handleLike = async (postId) => {
+    try {
+      const response = await API.post(`/api/posts/${postId}/like`);
+      const updatedPost = response.data;
+
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.id === updatedPost.id ? updatedPost : post
+        )
+      );
+    } catch (error) {
+      console.error("Error liking post:", error.response || error);
+    }
+  };
+
+
   if (loading) return <p>Loading posts...</p>;
 
   return (
@@ -35,10 +51,16 @@ function Posts() {
       ) : (
         <ul>
           {posts.map((post) => (
-            <li key={post.id}>
+            <li key={post.id} style={{ marginBottom: "20px" }}>
               <h3>{post.title}</h3>
               <p>{post.content}</p>
               <small>Author: {post.author}</small>
+               <div>
+                    <button onClick={() => handleLike(post.id)}>👍 Like</button>
+                         <span style={{ marginLeft: "10px" }}>
+                                {post.likeCount ||  0} likes
+                         </span>
+               </div>
             </li>
           ))}
         </ul>

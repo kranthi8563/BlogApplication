@@ -2,12 +2,12 @@ package com.MyBlog.BlogApplication.controller;
 
 
 import com.MyBlog.BlogApplication.model.Post;
-import com.MyBlog.BlogApplication.service.PostService;
 import com.MyBlog.BlogApplication.service.PostServiceImpl;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -27,7 +27,7 @@ public class PostController {
 
     @GetMapping("")
     public List<Post> getAllPosts(){
-        return postService.getAllPosts();
+        return postService.getAllPostsSortedByLikes();
     }
 
     @GetMapping("/{id}")
@@ -52,11 +52,11 @@ public class PostController {
         return postService.patchPost(id, partialUpdate);
     }
 
-    @PatchMapping("/{id}/like")
-    public ResponseEntity<Post> likeCount(@PathVariable Long id){
-        Post likedPost = postService.likedPost(id);
+    @PostMapping("/{id}/like")
+    public ResponseEntity<Post> likeCount(@PathVariable Long id, Principal principal) {
+        String username = principal.getName();
+        Post likedPost = postService.likedPost(id, username);
         return ResponseEntity.ok(likedPost);
-
     }
 
 

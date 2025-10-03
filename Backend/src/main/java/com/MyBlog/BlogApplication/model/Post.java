@@ -5,6 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Entity
@@ -20,9 +23,25 @@ public class Post {
     @NotBlank(message="Please Provide the Content")
     private String content;
     @NotBlank(message = "Please Provide the Author Name")
-    private String Author;
-    private Instant createdAt = Instant.now();
-    private Long likeCount = 0L;
+    private String author;
+    private LocalDateTime createdAt = LocalDateTime.now();
+    @ManyToMany
+    @JoinTable(
+            name = "post_likes",
+            joinColumns = @JoinColumn(name = "post_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<User> likedUsers = new HashSet<>();
+    public void addLike(User user) {
+        likedUsers.add(user);
+    }
+    public void removeLike(User user) {
+        likedUsers.remove(user);
+    }
+
+    public int getLikeCount() {
+        return likedUsers.size();
+    }
 
     public Long getId() {
         return id;
@@ -49,26 +68,26 @@ public class Post {
     }
 
     public String getAuthor() {
-        return Author;
+        return author;
     }
 
     public void setAuthor(String author) {
-        Author = author;
+        this.author = author;
     }
 
-    public Instant getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Instant createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Long getLikeCount() {
-        return likeCount;
+    public Set<User> getLikedUsers() {
+        return likedUsers;
     }
 
-    public void setLikeCount(Long likeCount) {
-        this.likeCount = likeCount;
+    public void setLikedUsers(Set<User> likedUsers) {
+        this.likedUsers = likedUsers;
     }
 }

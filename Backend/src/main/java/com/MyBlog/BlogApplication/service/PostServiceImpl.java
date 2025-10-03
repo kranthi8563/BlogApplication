@@ -1,7 +1,7 @@
 package com.MyBlog.BlogApplication.service;
 
-import com.MyBlog.BlogApplication.exception.ResourceNotFoundException;
 import com.MyBlog.BlogApplication.model.Post;
+import com.MyBlog.BlogApplication.model.User;
 import com.MyBlog.BlogApplication.repository.PostRepository;
 import com.MyBlog.BlogApplication.repository.UserRepository;
 
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class PostServiceImpl implements PostService{
+public class PostServiceImpl{
 
     private PostRepository postRepository;
     private UserRepository userRepository;
@@ -21,21 +21,21 @@ public class PostServiceImpl implements PostService{
     }
 
 
-    @Override
+
     public Post createPost(Post post){
         return postRepository.save(post);
     }
 
-    @Override
-    public List<Post> getAllPosts(){
-        return postRepository.findAll();
+    public List<Post> getAllPostsSortedByLikes() {
+        return postRepository.findAllOrderByLikesDesc();
     }
-    @Override
+
+
     public  Post getPostById(Long id){
         return postRepository.findById(id).orElse(null);
     }
 
-    @Override
+
     public  Post updatePost(Long id,Post updatedPost){
         return postRepository.findById(id).map(post-> {
             post.setTitle(updatedPost.getTitle());
@@ -44,12 +44,12 @@ public class PostServiceImpl implements PostService{
             return postRepository.save(post);
         }).orElse(null);
     }
-    @Override
+
     public void deletePost(Long id){
         postRepository.deleteById(id);
     }
 
-    @Override
+
    public Post patchPost(Long id, Post partialUpdate){
         return postRepository.findById(id).map(post -> {
             if (partialUpdate.getTitle() != null) {
@@ -65,11 +65,19 @@ public class PostServiceImpl implements PostService{
         }).orElse(null);
    }
 
-   @Override
-   public Post  likedPost(Long id){
-        Post post = postRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Post Not Found with id "+id));
-        post.setLikeCount(post.getLikeCount()+1);
-        return postRepository.save(post);
 
+   public Post likedPost(Long postId, String username) {
+       Post post = postRepository.findById(postId)
+               .orElseThrow(() -> new RuntimeException("Post not found"));
+
+       User user = userRepository.findByUsername(username)
+               .orElseThrow(() -> new RuntimeException("User not found"));
+       if (!post.getLikedUsers().contains(user)) {
+           post.addLike(user);
+           postRepository.save(post);
+       }
+
+       return post;
    }
+
 }
