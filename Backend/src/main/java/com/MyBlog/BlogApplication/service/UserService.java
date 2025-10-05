@@ -32,6 +32,11 @@ public class UserService {
     }
 
     public User registerUser(User user){
+//        user.setPassword(passwordEncoder.encode(user.getPassword()));
+//        return userRepository.save(user);
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            throw new RuntimeException("Username already exists!");
+        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
@@ -42,15 +47,15 @@ public class UserService {
 
         if (userOpt.isPresent()) {
             User user = userOpt.get();
+            System.out.println("Login -> raw: " + password + " | stored: " + user.getPassword());
+
 
             // Check password with BCrypt
             if (passwordEncoder.matches(password, user.getPassword())) {
                 // Generate token
                return jwtUtil.generateToken(user.getUsername());
-
             }
         }
-
         throw new RuntimeException("Invalid Username or Password");
     }
 }

@@ -1,72 +1,131 @@
 import React, { useEffect, useState } from "react";
-import API from "../API";
+import axios from "axios";
+import "./Posts.css";
 
 function Posts() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const token = localStorage.getItem("token");
+  const currentUser = localStorage.getItem("username");
+
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await API.get("/api/posts"); // token auto attached
-        setPosts(response.data);
-      } catch (error) {
-        console.error("Error fetching posts:", error.response || error);
-        if (error.response && error.response.status === 403) {
-          alert("Unauthorized! Please login again.");
-          localStorage.removeItem("token");
-          window.location.href = "/";
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchPosts();
   }, []);
 
-  const handleLike = async (postId) => {
+  const fetchPosts = async () => {
     try {
-      const response = await API.post(`/api/posts/${postId}/like`);
-      const updatedPost = response.data;
+      const res = await axios.get("http://localhost:8081/api/posts", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const postsWithMenu = res.data.map((p) => ({ ...p, menuOpen: false }));
+      setPosts(res.data);
+    } catch (err) {
+      console.error("Error fetching posts:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      setPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post.id === updatedPost.id ? updatedPost : post
-        )
+  const toggleLike = async (postId) => {
+    try {
+      const res = await axios.post(
+        `http://localhost:8081/api/posts/${postId}/like`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-    } catch (error) {
-      console.error("Error liking post:", error.response || error);
+      setPosts((prev) => prev.map((p) => (p.id === postId ? res.data : p)));
+    } catch (err) {
+      console.error("Error toggling like:", err);
     }
   };
 
 
-  if (loading) return <p>Loading posts...</p>;
+  const handleDelete = async (postId) => {
+    if (!window.confirm("Are you sure you want to delete this post?")) return;
+    try {
+      await axios.delete(`http://localhost:8081/api/posts/${postId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setPosts((prev) => prev.filter((p) => p.id !== postId));
+    } catch (err) {
+      console.error("Error deleting post:", err);
+      alert("Failed to delete post");
+    }
+  };
+
+  const toggleMenu = (postId) => {
+      setPosts((prev) =>
+        prev.map((p) =>
+          p.id === postId ? { ...p, menuOpen: !p.menuOpen } : p
+        )
+      );
+    };
 
   return (
-    <div>
-      <h2>Posts</h2>
-      {posts.length === 0 ? (
+    <div className="posts-page">
+      <h2>All Posts</h2>
+
+      {loading ? (
+        <p>Loading posts...</p>
+      ) : posts.length === 0 ? (
         <p>No posts available.</p>
       ) : (
-        <ul>
-          {posts.map((post) => (
-            <li key={post.id} style={{ marginBottom: "20px" }}>
-              <h3>{post.title}</h3>
-              <p>{post.content}</p>
-              <small>Author: {post.author}</small>
-               <div>
-                    <button onClick={() => handleLike(post.id)}>👍 Like</button>
-                         <span style={{ marginLeft: "10px" }}>
-                                {post.likeCount ||  0} likes
-                         </span>
-               </div>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
-}
+        <div className="posts-container">
+          {posts.map((post) => {
+               const authorName =
+                          typeof post.author === "string" ? post.author : post.author.username;
+                        const isOwner = authorName === currentUser;
+                        console.log("Post:", post.title, "Author:", post.author, "CurrentUser:", currentUser);
 
-export default Posts;
+
+                        return (
+                          <div key={post.id} className="post-card">
+                            <div className="post-header">
+                              <h3>{post.title}</h3>
+
+                              {/* Three-dot menu visible only to post owner */}
+                              {isOwner && (
+                                <div className="post-menu">
+                                  <button
+                                    className="menu-btn"
+                                    onClick={() => toggleMenu(post.id)}
+                                  >
+                                    ⋮
+                                  </button>
+                                  {post.menuOpen && (
+                                    <div className="menu-dropdown">
+                                      <button onClick={() => handleDelete(post.id)}>
+                                        Delete
+                                      </button>
+                                      <button onClick={() => alert("Edit logic here")}>
+                                        Edit
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+
+                            <p>{post.content}</p>
+                            <small>Author: {authorName}</small>
+
+                            <div className="likes-section">
+                              <button
+                                className={post.likedByCurrentUser ? "liked" : ""}
+                                onClick={() => toggleLike(post.id)}
+                              >
+                                👍 {post.likedByCurrentUser ? "Liked" : "Like"} (
+                                {post.likeCount})
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
+            export default Posts;

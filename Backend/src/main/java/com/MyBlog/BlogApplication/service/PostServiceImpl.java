@@ -5,6 +5,8 @@ import com.MyBlog.BlogApplication.model.User;
 import com.MyBlog.BlogApplication.repository.PostRepository;
 import com.MyBlog.BlogApplication.repository.UserRepository;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,12 +29,37 @@ public class PostServiceImpl{
     }
 
     public List<Post> getAllPostsSortedByLikes() {
-        return postRepository.findAllOrderByLikesDesc();
+        List<Post> posts = postRepository.findAllOrderByLikesDesc();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String currentUsername = auth != null ? auth.getName() : null;
+
+        if (currentUsername != null) {
+            posts.forEach(post -> {
+                boolean liked = post.getLikedUsers().stream()
+                        .anyMatch(user -> user.getUsername().equals(currentUsername));
+                post.setLikedByCurrentUser(liked);
+            });
+        }
+
+        return posts;
     }
 
 
     public  Post getPostById(Long id){
-        return postRepository.findById(id).orElse(null);
+        Post post = postRepository.findById(id).orElse(null);
+
+        if (post != null) {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String currentUsername = auth != null ? auth.getName() : null;
+
+            if (currentUsername != null) {
+                boolean liked = post.getLikedUsers().stream()
+                        .anyMatch(user -> user.getUsername().equals(currentUsername));
+                post.setLikedByCurrentUser(liked);
+            }
+        }
+
+        return post;
     }
 
 
@@ -72,12 +99,21 @@ public class PostServiceImpl{
 
        User user = userRepository.findByUsername(username)
                .orElseThrow(() -> new RuntimeException("User not found"));
-       if (!post.getLikedUsers().contains(user)) {
+
+       // Toggle like (add if not liked, remove if already liked)
+       if (post.getLikedUsers().contains(user)) {
+           post.removeLike(user);
+       } else {
            post.addLike(user);
-           postRepository.save(post);
        }
 
-       return post;
+       // Save updated post
+       Post savedPost = postRepository.save(post);
+
+       // Update "likedByCurrentUser" flag for frontend
+       savedPost.setLikedByCurrentUser(savedPost.getLikedUsers().contains(user));
+
+       return savedPost;
    }
 
 }

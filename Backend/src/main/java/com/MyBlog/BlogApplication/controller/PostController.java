@@ -21,7 +21,9 @@ public class PostController {
     }
 
     @PostMapping("")
-    public Post createPost(@Valid @RequestBody Post post){
+    public Post createPost(@Valid @RequestBody Post post,Principal principal){
+
+        post.setAuthor(principal.getName());
         return postService.createPost(post);
     }
 
@@ -36,15 +38,30 @@ public class PostController {
     }
 
     @PutMapping("/{id}")
-    public Post updatePost(@PathVariable Long id,@RequestBody Post updatedPost){
-        return postService.updatePost(id,updatedPost);
+    public ResponseEntity<?> updatePost(@PathVariable Long id,
+                                        @RequestBody Post updatedPost,
+                                        Principal principal) {
+        Post existing = postService.getPostById(id);
+        if (existing == null) {
+            return ResponseEntity.notFound().build();
+        }
+        if (!existing.getAuthor().equals(principal.getName())) {
+            return ResponseEntity.status(403).body("You cannot edit this post");
+        }
+        return ResponseEntity.ok(postService.updatePost(id, updatedPost));
     }
 
     @DeleteMapping("/{id}")
-    public String deletePost(@PathVariable Long id){
-        Post post = new Post();
+    public ResponseEntity<?> deletePost(@PathVariable Long id, Principal principal) {
+        Post existing = postService.getPostById(id);
+        if (existing == null) {
+            return ResponseEntity.notFound().build();
+        }
+        if (!existing.getAuthor().equals(principal.getName())) {
+            return ResponseEntity.status(403).body("You cannot delete this post");
+        }
         postService.deletePost(id);
-        return "the post has been deleted";
+        return ResponseEntity.ok("Post deleted");
     }
 
     @PatchMapping("/{id}")

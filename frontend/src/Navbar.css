@@ -1,0 +1,132 @@
+/* App Title fixed
+.app-title {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  z-index: 1001;
+  margin: 0;
+}
+*/
+.app-title {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  font-size: 22px;
+  font-weight: bold;
+  z-index: 1001;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.logo-blog {
+  color: white;     /* Blog in white */
+}
+
+.logo-pozts {
+  color: #6a0dad;      /* Pozts in dark color (same as before) */
+  margin-left: 4px; /* small gap */
+}
+
+
+/* Sidebar */
+.sidebar {
+  width: 65px;                  /* collapsed width */
+  height: 100vh;
+  background: #333;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 80px;            /* push down below logo */
+  position: fixed;
+  top: 0;
+  left: 0;
+  transition: width 0.3s ease;
+  overflow: hidden;
+  z-index: 1000;
+}
+
+.sidebar:hover {
+  width: 150px;                 /* expand on hover */
+}
+
+/* Menu */
+.menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.menu li {
+  margin: 20px 0;
+}
+
+.menu a {
+  color: white;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  transition: background 0.2s;
+}
+
+.menu a:hover {
+  background: #444;
+}
+
+.icon {
+  font-size: 20px;
+  margin-right: 10px;
+  min-width: 30px;
+  text-align: center;
+  display: inline-block;
+}
+
+/* Hide text until hover */
+.link-text {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  white-space: nowrap;
+}
+
+.sidebar:hover .link-text {
+  opacity: 1;
+}
+
+/* Top bar */
+.topbar {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+}
+
+/* Logout button */
+.logout-btn {
+  background: red;
+  border: none;
+  padding: 8px 12px;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.logout-btn:hover {
+  background: darkred;
+}
+
+/* Content shifting */
+.main-content {
+  margin-left: 70px; /* collapsed space */
+  padding: 20px;
+  transition: margin-left 0.3s ease;
+}
+
+.sidebar:hover ~ .main-content {
+  margin-left: 200px; /* expanded space */
+}

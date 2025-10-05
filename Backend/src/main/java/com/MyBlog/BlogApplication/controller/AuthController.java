@@ -32,9 +32,11 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody User loginData) {
+        System.out.println("Controller hit: login request received for " + loginData.getUsername());
+
         try {
             String token = userService.loginUser(loginData.getUsername(), loginData.getPassword());
-            return ResponseEntity.ok(Map.of("token", token));  // 👈 return JSON object
+            return ResponseEntity.ok(Map.of("token", token,"username",loginData.getUsername()));  // 👈 return JSON object
         } catch (Exception e) {
             return ResponseEntity.status(401).body("Invalid username or password");
         }

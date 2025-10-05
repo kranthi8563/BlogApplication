@@ -1,5 +1,6 @@
 package com.MyBlog.BlogApplication.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 
@@ -22,7 +23,6 @@ public class Post {
     @Column(columnDefinition = "TEXT")
     @NotBlank(message="Please Provide the Content")
     private String content;
-    @NotBlank(message = "Please Provide the Author Name")
     private String author;
     private LocalDateTime createdAt = LocalDateTime.now();
     @ManyToMany
@@ -41,6 +41,19 @@ public class Post {
 
     public int getLikeCount() {
         return likedUsers.size();
+    }
+
+    @Transient
+    @JsonProperty
+    private boolean likedByCurrentUser;
+
+    // Getters & Setters
+    public boolean isLikedByCurrentUser() {
+        return likedByCurrentUser;
+    }
+
+    public void setLikedByCurrentUser(boolean likedByCurrentUser) {
+        this.likedByCurrentUser = likedByCurrentUser;
     }
 
     public Long getId() {
